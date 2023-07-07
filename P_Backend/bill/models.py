@@ -1,12 +1,9 @@
 from django.utils import timezone
 from django.db import models
-
-class Admin(models.Model):
-    user= models.CharField(max_length=200,default='')
-    password= models.CharField(max_length=200,default='')
+from django.contrib.auth.models import User
 
 class Bill(models.Model):
-   # id_Admin= models.ForeignKey(Admin, on_delete=models.CASCADE)
+    id_Admin= models.ForeignKey(User, on_delete=models.CASCADE,null=True)
     date_entry = models.DateTimeField(default=timezone.now)
     date_exit = models.DateTimeField(default=timezone.now)
     zone= models.CharField(max_length=200,default='')
