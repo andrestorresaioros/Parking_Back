@@ -5,6 +5,18 @@ class Client_Serializer(serializers.ModelSerializer):
     class Meta:
         model= Client
         fields= ['id', 'name', 'phone']
-        #fields= '__all__'
 
+class Receipt_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model= Receipt
+        fields= '__all__'
 
+class Contract_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model= Contract
+        fields= '__all__'
+
+class Contract_Client_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model= Contract_Client
+        fields= ['id', 'id_Contract', 'id_Client']
