@@ -11,6 +11,7 @@ class Parking(models.Model):
 
 class Space(models.Model):
     id_Parking= models.ForeignKey(Parking, on_delete=models.CASCADE)
+    #state
 
 class Type_Parking(models.Model):
     id_Parking= models.ForeignKey(Parking, on_delete=models.CASCADE)

@@ -25,8 +25,8 @@ SECRET_KEY = 'django-insecure-vg0&l668@fc^hkns4%e+yv9(%dpn3&vp^@8lb^naa^ui@x@h(h
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
+CORS_ALLOW_ALL_ORIGINS= True
 
 # Application definition
 
@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     'bill',
     'Parking',
     'Vehicle',
-    'Client'
+    'Client',
+    'rest_framework',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -51,6 +53,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',    
+    'django.middleware.common.CommonMiddleware'
 ]
 
 ROOT_URLCONF = 'P_Backend.urls'

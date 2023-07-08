@@ -3,7 +3,6 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 
 class Client(models.Model):
-    id_Admin= models.ForeignKey(User, on_delete=models.CASCADE,null=True)
     name= models.CharField(max_length=200,default='')
     phone= models.CharField(max_length=200,default='')
 
