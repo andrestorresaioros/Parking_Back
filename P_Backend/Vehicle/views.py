@@ -18,3 +18,9 @@ def Vehicle_view(request, *args, **kwargs):
             serializer.save()
             return JsonResponse(serializer.data,status=status.HTTP_200_OK)
         return JsonResponse(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+def consult_Vehicle(request,plates):
+        #plates=request.GET.get('plate')
+        Vehicles = Vehicle.objects.filter(plate=plates)
+        serializer=Vehicle_Serializer(Vehicles,many=True)
+        return JsonResponse(serializer.data,safe=False)
