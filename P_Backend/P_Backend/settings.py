@@ -37,6 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    #allauth
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
     'bill',
     'Parking',
     'Vehicle',

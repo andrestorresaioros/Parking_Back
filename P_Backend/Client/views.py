@@ -58,3 +58,9 @@ def Contract_Client_view(request, *args, **kwargs):
             serializer.save()
             return JsonResponse(serializer.data,status=status.HTTP_200_OK)
         return JsonResponse(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+#def exit_Vehicle(request, plate):
+    #receipt. .....
+    #saca hora entrada
+    #se saca la hora de salida
+    

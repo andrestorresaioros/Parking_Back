@@ -10,3 +10,5 @@ class Vehicle(models.Model):
     brand= models.CharField(max_length=200,default='')
     model= models.CharField(max_length=200,default='')
     type= models.CharField(max_length=200,default='')
+    def __str__(self):
+        return self.plate
