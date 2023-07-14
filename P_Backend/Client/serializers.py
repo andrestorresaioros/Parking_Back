@@ -4,7 +4,7 @@ from rest_framework import serializers
 class Client_Serializer(serializers.ModelSerializer):
     class Meta:
         model= Client
-        fields= ['id', 'name', 'phone']
+        fields= '__all__'
 
 class Receipt_Serializer(serializers.ModelSerializer):
     class Meta:

@@ -4,16 +4,16 @@ from django.contrib.auth.models import User
 from Vehicle.models import Vehicle
 
 class Client(models.Model):
-    name= models.CharField(max_length=200,default='')
-    phone= models.CharField(max_length=200,default='')
-    identification= models.CharField(max_length=200,default='')
+    name= models.CharField(max_length=200,default='',null=True,blank=True)
+    phone= models.CharField(max_length=200,default='',null=True,blank=True)
+    identification= models.CharField(max_length=200,default='',null=True,blank=True)
     def __str__(self):
         return self.name
 
 class Receipt(models.Model):
     id_Client= models.ForeignKey(Client, on_delete=models.CASCADE)
     id_Vehicle= models.ForeignKey(Vehicle, on_delete=models.CASCADE,
-                                  related_name="Receipt_Vehicle",null=True)
+                                  related_name="Receipt_Vehicle",null=True,blank=True)
     date_entry = models.TimeField(default=timezone.now)
     date_exit = models.TimeField(default=timezone.now, null=True,blank=True)
     ubication= models.CharField(max_length=200,default='')
@@ -23,8 +23,8 @@ class Receipt(models.Model):
 
 class Contract(models.Model):
     id_Admin= models.ForeignKey(User, on_delete=models.CASCADE,null=True)
-    date_entry = models.DateTimeField(default=timezone.now)
-    date_exit = models.DateTimeField(default=timezone.now)
+    date_entry = models.DateTimeField(default=timezone.now,null=True,blank=True)
+    date_exit = models.DateTimeField(default=timezone.now,null=True,blank=True)
     type= models.CharField(max_length=200,default='')
     def __str__(self):
         return self.type

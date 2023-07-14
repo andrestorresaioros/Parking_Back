@@ -22,5 +22,8 @@ urlpatterns = [
     path('Clients/', include('Client.urls')),
     path('Vehicles/', include('Vehicle.urls')),
     path('bills/', include('bill.urls')),
-    path('Parkings/', include('Parking.urls'))
+    path('Parkings/', include('Parking.urls')),
+    path('accounts/', include('allauth.urls')),
+    path('api/auth/', include('dj_rest_auth.urls')),
+    path('api/auth/register/', include('dj_rest_auth.registration.urls'))
 ]
