@@ -22,12 +22,22 @@ class Receipt(models.Model):
         return str(self.id_Client) + " - " + str(self.id_Vehicle)
 
 class Contract(models.Model):
-    id_Admin= models.ForeignKey(User, on_delete=models.CASCADE,null=True)
-    date_entry = models.DateTimeField(default=timezone.now,null=True,blank=True)
-    date_exit = models.DateTimeField(default=timezone.now,null=True,blank=True)
-    type= models.CharField(max_length=200,default='')
+    CONTRACT_TYPES = [
+        ('Minuto', 'Minuto'),
+        ('Día', 'Día'),
+        ('Semana', 'Semana'),
+        ('Mes', 'Mes'),
+        ('Año', 'Año'),
+    ]
+
+    id_Admin = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    date_entry = models.DateTimeField(default=timezone.now, null=True, blank=True)
+    date_exit = models.DateTimeField(default=timezone.now, null=True, blank=True)
+    type = models.CharField(max_length=200, choices=CONTRACT_TYPES, default='')
+
     def __str__(self):
         return self.type
+
 
 class Contract_Client(models.Model):
     id_Contract = models.ForeignKey(Contract, on_delete=models.CASCADE)
