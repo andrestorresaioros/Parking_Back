@@ -13,10 +13,10 @@ class Client(models.Model):
 class Receipt(models.Model):
     id_Client= models.ForeignKey(Client, on_delete=models.CASCADE)
     id_Vehicle= models.ForeignKey(Vehicle, on_delete=models.CASCADE,
-                                  related_name="Receipt_Vehicle",null=True,blank=True)
-    date_entry = models.TimeField(default=timezone.now)
-    date_exit = models.TimeField(default=timezone.now, null=True,blank=True)
-    ubication= models.CharField(max_length=200,default='')
+                                  related_name="Receipt_Vehicle")
+    date_entry = models.DateTimeField(default=timezone.now)
+    date_exit = models.DateTimeField(default=timezone.now, null=True,blank=True)
+    ubication= models.CharField(max_length=200,default='',null=True,blank=True)
     cost= models.CharField(max_length=200,default='',null=True,blank=True)
     def __str__(self):
         return str(self.id_Client) + " - " + str(self.id_Vehicle)
@@ -29,7 +29,6 @@ class Contract(models.Model):
         ('Mes', 'Mes'),
         ('Año', 'Año'),
     ]
-
     id_Admin = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     date_entry = models.DateTimeField(default=timezone.now, null=True, blank=True)
     date_exit = models.DateTimeField(default=timezone.now, null=True, blank=True)
