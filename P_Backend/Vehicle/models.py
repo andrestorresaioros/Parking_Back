@@ -9,7 +9,6 @@ class Vehicle(models.Model):
         ('Motocicleta', 'Motocicleta'),
         ('Vehículos Pesados', 'Vehículos Pesados'),
     ]
-
     id_Parking = models.ForeignKey(Parking, on_delete=models.CASCADE, null=True)
     color = models.CharField(max_length=200, default='', null=True, blank=True)
     plate = models.CharField(max_length=200, default='')

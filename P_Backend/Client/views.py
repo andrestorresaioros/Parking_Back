@@ -9,6 +9,8 @@ from datetime import datetime
 from Vehicle.models import Vehicle
 from Parking.models import Parking
 from bill.models import Bill
+from dateutil.parser import parse as dateutil_parse
+
 
 def user_view(request, *args, **kwargs):
     if request.method == 'GET':
@@ -29,58 +31,70 @@ def Receipt_view(request, *args, **kwargs):
         serializer=Receipt_Serializer(Receipts,many=True)
         return JsonResponse(serializer.data,safe=False)
     
-    if request.method == 'POST':
-        request_data=JSONParser().parse(request)
-        serializer=Receipt_Serializer(data=request_data)
+    if request.method == 'POST': 
+        request_data = JSONParser().parse(request)
+        serializer = Receipt_Serializer(data=request_data)
         if serializer.is_valid():
-            serializer.save()
-            #request data se tiene id parking type vehicle 
-            if 'id_Contract' in request_data and 'id_Vehicle' in request_data:
-                contract_id = request_data['id_Contract']
-                vehicle_id = request_data['id_Vehicle']
-                if contract_id['type'] == 'Minuto':
+            contract_type = request_data['type_Contract']
+            vehicle_id = request_data['id_Vehicle']
+            try:
+                vehicle = Vehicle.objects.get(id=vehicle_id)
+                parking = Parking.objects.get(id=vehicle.id_Parking.id)
+
+                # Asignar cupo al vehículo
+                spot_number = parking.get_next_available_spot_number(vehicle.type)
+                if spot_number is None:
+                    return JsonResponse({'message': 'No hay cupos disponibles para este tipo de vehículo'}, status=status.HTTP_400_BAD_REQUEST)
+                entry_time = dateutil_parse(request_data['date_entry'])
+                exit_time = dateutil_parse(request_data['date_exit'])
+                minutes = (exit_time - entry_time).total_seconds() // 60
+
+                if contract_type == 'Minuto':
                     try:
-                        contract = Contract.objects.get(id=contract_id)
-                        vehicle = Vehicle.objects.get(id=vehicle_id)
-                        parking = Parking.objects.get(id=vehicle.id_Parking)
-
-                        entry_time = datetime.strptime(request_data['date_entry'], '%Y-%m-%dT%H:%M:%S')
-                        exit_time = datetime.strptime(request_data['date_exit'], '%Y-%m-%dT%H:%M:%S')
-                        minutes = (exit_time - entry_time).total_seconds() // 60
-
-                        if vehicle.type == 'Automóvil':
-                            cost_per_minute = float(parking.values_Zone) * float(parking.values_Autos)
-                        elif vehicle.type == 'Motocicleta':
-                            cost_per_minute = float(parking.values_Zone) * float(parking.values_Motos)
-                        elif vehicle.type == 'Vehículos Pesados':
-                            cost_per_minute = float(parking.values_Zone) * float(parking.values_Heavys)
-
-                        cost = str(cost_per_minute * minutes)
-                        serializer.instance.cost = cost
-                        serializer.save()
-                    except (Contract.DoesNotExist, Vehicle.DoesNotExist, Parking.DoesNotExist):
-                        pass
-
-                elif contract_id['type'] in ['Día', 'Semana', 'Mes', 'Año']:
-                    try:
-                        contract = Contract.objects.get(id=contract_id)
                         bill = Bill.objects.get(id_Parking=vehicle.id_Parking)
-
-                        if contract.type == 'Día':
-                            cost = bill.values_Day
-                        elif contract.type == 'Semana':
-                            cost = bill.values_Week
-                        elif contract.type == 'Mes':
-                            cost = bill.values_Month
-                        elif contract.type == 'Año':
-                            cost = bill.values_Year
-
-                        serializer.instance.cost = cost
-                        serializer.save()
-                    except (Contract.DoesNotExist, Bill.DoesNotExist):
+                        if vehicle.type.strip() == 'Automóvil':
+                            cost_per_minute = (float(bill.values_Zone) * float(bill.values_Autos) + 1)
+                        elif vehicle.type == 'Motocicleta':
+                            cost_per_minute = float(bill.values_Zone) * float(bill.values_Motos)
+                        elif vehicle.type == 'Vehículos Pesados':
+                            cost_per_minute = float(bill.values_Zone) * float(bill.values_Heavys)
+                        cost = cost_per_minute * (minutes + 1)
+                    except Exception as e:
+                        print("Error al calcular el costo:", e)
                         pass
-            return JsonResponse(serializer.data,status=status.HTTP_200_OK)
-        return JsonResponse(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+                elif contract_type in ['Día', 'Semana', 'Mes', 'Año']:
+                    try:
+                        bill = Bill.objects.get(id_Parking=vehicle.id_Parking)
+                        if contract_type == 'Día':
+                            cost = bill.values_Day
+                        elif contract_type == 'Semana':
+                            cost = bill.values_Week
+                        elif contract_type == 'Mes':
+                            cost = bill.values_Month
+                        elif contract_type == 'Año':
+                            cost = bill.values_Year
+                    except Exception as e:
+                        print("Error al calcular el costo:", e)
+                        pass
+                
+                # Guardar el serializador primero
+                serializer.save()
+
+                # Asignar el número de cupo al vehículo en el campo 'ubication'
+                serializer.instance.ubication = f"Cupo {spot_number}"
+                serializer.save()
+
+                # Asignar el costo calculado al campo 'cost'
+                serializer.instance.cost = cost
+                serializer.save()
+                
+            except Exception as e:
+                print("Error al calcular el costo o asignar cupo:", e)
+                pass
+
+            return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+        
+    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 def Contract_view(request, *args, **kwargs):
     if request.method == 'GET':
